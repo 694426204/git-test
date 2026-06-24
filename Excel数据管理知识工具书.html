@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel文档数据管理 · 漏斗思维知识工具书</title>
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg2:#FAFAFA;
+  --bg3:#f8f9fa;
+  --accent:#2563EB;
+  --accent-light:#EFF6FF;
+  --green:#16a34a;
+  --green-light:#F0FDF4;
+  --orange:#b45309;
+  --orange-light:#FFFBEB;
+  --red:#dc2626;
+  --text:#1a1a1a;
+  --text2:#444;
+  --text3:#666;
+  --border:#e0e0e0;
+  --code-bg:#f5f5f5;
+  --radius:6px;
+  --funnel-l3:#1e3a5f;
+  --funnel-l3-light:#253d5c;
+  --funnel-l2:#3b5998;
+  --funnel-l2-light:#4a6fa5;
+  --funnel-l1:#e8f4fd;
+  --funnel-l1-accent:#2563EB;
+  --transition-bg:#f3f4f6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'PingFang SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.8;
+  font-size:17px;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{
+  background:var(--code-bg);
+  padding:2px 6px;
+  border-radius:4px;
+  font-family:'SF Mono',Consolas,'Courier New',monospace;
+  font-size:15px;
+  color:var(--orange);
+}
+strong{color:#111;font-weight:700}
+.mark{background:#FEF3C7;padding:1px 4px;border-radius:3px}
+
+/* ===== Top Navigation ===== */
+.topnav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(255,255,255,0.97);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.topnav-inner{
+  max-width:960px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding:10px 0;
+  scrollbar-width:none;
+}
+.topnav-inner::-webkit-scrollbar{display:none}
+.topnav .brand{
+  font-size:16px;
+  font-weight:700;
+  color:var(--accent);
+  margin-right:16px;
+  flex-shrink:0;
+}
+.topnav a{
+  display:inline-block;
+  padding:4px 12px;
+  font-size:14px;
+  color:var(--text3);
+  border-radius:4px;
+  flex-shrink:0;
+  text-decoration:none;
+}
+.topnav a:hover{background:var(--bg3);color:var(--accent);text-decoration:none}
+.topnav .sep{color:#ddd;margin:0 4px;flex-shrink:0}
+.topnav .funnel-mark{font-size:12px;margin-right:2px;font-weight:800}
+
+/* ===== Content ===== */
+.content{
+  max-width:900px;
+  margin:0 auto;
+  padding:40px 32px 80px;
+}
+
+/* ===== Hero ===== */
+.hero{padding:56px 0 40px;text-align:center}
+.hero h1{font-size:36px;font-weight:800;color:#111;margin-bottom:12px;letter-spacing:-0.5px}
+.hero .subtitle{font-size:17px;color:var(--text3);max-width:680px;margin:0 auto 28px}
+.hero .stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.hero .stat{text-align:center}
+.hero .stat .num{font-size:28px;font-weight:800;color:var(--accent)}
+.hero .stat .label{font-size:13px;color:var(--text3);margin-top:2px}
+
+/* ===== Funnel Overview ===== */
+.funnel-overview{
+  margin:0 auto 48px;
+  max-width:700px;
+}
+.funnel-overview-title{
+  text-align:center;
+  font-size:22px;
+  font-weight:700;
+  color:#111;
+  margin-bottom:24px;
+}
+.funnel-diagram{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+}
+.funnel-tier{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+  position:relative;
+}
+.funnel-tier:hover{opacity:0.9;transform:scale(1.01)}
+.funnel-tier-wide{
+  width:100%;
+  padding:28px 32px;
+  background:var(--funnel-l3);
+  color:#fff;
+  border-radius:10px 10px 0 0;
+}
+.funnel-tier-medium{
+  width:78%;
+  padding:24px 28px;
+  background:var(--funnel-l2);
+  color:#fff;
+}
+.funnel-tier-narrow{
+  width:56%;
+  padding:20px 24px;
+  background:var(--funnel-l1);
+  color:var(--funnel-l1-accent);
+  border-radius:0 0 10px 10px;
+}
+.funnel-tier .tier-label{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:2px;
+}
+.funnel-tier .tier-desc{
+  font-size:14px;
+  opacity:0.85;
+}
+.funnel-tier-narrow .tier-desc{opacity:0.7}
+.funnel-arrow{
+  width:0;height:0;
+  border-left:18px solid transparent;
+  border-right:18px solid transparent;
+}
+.funnel-arrow-top{border-top:14px solid var(--funnel-l3)}
+.funnel-arrow-bottom{border-top:14px solid var(--funnel-l2)}
+
+/* ===== Tags ===== */
+.tag{display:inline-block;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:600;margin:2px}
+.tag-l1{background:#EFF6FF;color:var(--accent)}
+.tag-l2{background:#F5F3FF;color:#7c3aed}
+.tag-l3{background:#FFFBEB;color:var(--orange)}
+
+/* ===== Section ===== */
+.section{margin-top:48px}
+.section-header{margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+.section-header h2{font-size:28px;font-weight:700;color:#111}
+.section-header p{font-size:15px;color:var(--text3);margin-top:4px}
+.layer-badge{display:inline-block;padding:3px 12px;border-radius:4px;font-size:12px;font-weight:700;margin-bottom:8px}
+
+/* ===== Funnel Layer Wrappers ===== */
+.funnel-layer{padding:40px 0 0}
+.funnel-layer-l3{
+  background:var(--funnel-l3);
+  margin:0 -32px;
+  padding:48px 32px 40px;
+  border-radius:0;
+}
+.funnel-layer-l3 .section{margin-top:32px}
+.funnel-layer-l3 .layer-badge{background:rgba(255,255,255,0.2);color:#e0e8f0}
+.funnel-layer-l3 .section-header{border-bottom-color:rgba(255,255,255,0.25);margin-bottom:16px;padding-bottom:8px}
+.funnel-layer-l3 .section-header h2{color:#fff;font-size:26px}
+.funnel-layer-l3 .section-header p{color:rgba(255,255,255,0.7)}
+.funnel-layer-l3 .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15)}
+.funnel-layer-l3 .card h3{color:#fff}
+.funnel-layer-l3 .card h3 .icon{font-size:20px}
+.funnel-layer-l3 .card ul li{color:rgba(255,255,255,0.85)}
+.funnel-layer-l3 .card ul li::before{color:#7eb8e0}
+.funnel-layer-l3 .card ul li strong{color:#fff}
+.funnel-layer-l3 .tri-item{background:rgba(255,255,255,0.06);border-left-color:rgba(255,255,255,0.3)}
+.funnel-layer-l3 .tri-item .tri-label{color:rgba(255,255,255,0.7)}
+.funnel-layer-l3 .tri-item p{color:rgba(255,255,255,0.75)}
+.funnel-layer-l3 .tri-item.core .tri-label{color:#7eb8e0}
+.funnel-layer-l3 .tri-item.ctx .tri-label{color:#b8a0e0}
+.funnel-layer-l3 .tri-item.scene .tri-label{color:#80d0a0}
+.funnel-layer-l3 .tri-item.core{border-left-color:#7eb8e0}
+.funnel-layer-l3 .tri-item.ctx{border-left-color:#b8a0e0}
+.funnel-layer-l3 .tri-item.scene{border-left-color:#80d0a0}
+.funnel-layer-l3 code{background:rgba(255,255,255,0.15);color:#a0d4f0}
+.funnel-layer-l3 strong{color:#fff}
+
+.funnel-layer-l2{
+  background:var(--funnel-l2);
+  margin:0 -16px;
+  padding:48px 16px 40px;
+  border-radius:0;
+}
+.funnel-layer-l2 .section{margin-top:32px}
+.funnel-layer-l2 .layer-badge{background:rgba(255,255,255,0.2);color:#d0dced}
+.funnel-layer-l2 .section-header{border-bottom-color:rgba(255,255,255,0.25);margin-bottom:16px;padding-bottom:8px}
+.funnel-layer-l2 .section-header h2{color:#fff;font-size:26px}
+.funnel-layer-l2 .section-header p{color:rgba(255,255,255,0.7)}
+.funnel-layer-l2 .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15)}
+.funnel-layer-l2 .card h3{color:#fff}
+.funnel-layer-l2 .card h3 .icon{font-size:20px}
+.funnel-layer-l2 .card ul li{color:rgba(255,255,255,0.85)}
+.funnel-layer-l2 .card ul li::before{color:#8ab4e8}
+.funnel-layer-l2 .card ul li strong{color:#fff}
+.funnel-layer-l2 .tri-item{background:rgba(255,255,255,0.06);border-left-color:rgba(255,255,255,0.3)}
+.funnel-layer-l2 .tri-item .tri-label{color:rgba(255,255,255,0.7)}
+.funnel-layer-l2 .tri-item p{color:rgba(255,255,255,0.75)}
+.funnel-layer-l2 .tri-item.core .tri-label{color:#8ab4e8}
+.funnel-layer-l2 .tri-item.ctx .tri-label{color:#c0a8e8}
+.funnel-layer-l2 .tri-item.scene .tri-label{color:#80d0a0}
+.funnel-layer-l2 .tri-item.core{border-left-color:#8ab4e8}
+.funnel-layer-l2 .tri-item.ctx{border-left-color:#c0a8e8}
+.funnel-layer-l2 .tri-item.scene{border-left-color:#80d0a0}
+.funnel-layer-l2 code{background:rgba(255,255,255,0.15);color:#a0c8f0}
+.funnel-layer-l2 strong{color:#fff}
+.funnel-layer-l2 .tbl th{background:rgba(255,255,255,0.12);color:#fff;border-bottom-color:rgba(255,255,255,0.3)}
+.funnel-layer-l2 .tbl td{color:rgba(255,255,255,0.8);border-bottom-color:rgba(255,255,255,0.1)}
+
+.funnel-layer-l1{
+  background:var(--funnel-l1);
+  margin:0 0;
+  padding:48px 0 40px;
+  border-radius:0;
+}
+.funnel-layer-l1 .layer-badge{background:#dbeafe;color:var(--funnel-l1-accent)}
+.funnel-layer-l1 .section-header{border-bottom-color:var(--border)}
+.funnel-layer-l1 .section-header h2{color:#111;font-size:26px}
+.funnel-layer-l1 .section-header p{color:var(--text3)}
+.funnel-layer-l1 .card{background:#fff;border:1px solid #c5dff0}
+.funnel-layer-l1 .card h3{color:#111}
+.funnel-layer-l1 .card ul li{color:var(--text2)}
+.funnel-layer-l1 .card ul li strong{color:#111}
+.funnel-layer-l1 .tri-item{background:#fff}
+.funnel-layer-l1 .tri-item.core{background:#EFF6FF;border-left-color:var(--accent)}
+.funnel-layer-l1 .tri-item.ctx{background:#F5F3FF;border-left-color:#7c3aed}
+.funnel-layer-l1 .tri-item.scene{background:#F0FDF4;border-left-color:var(--green)}
+.funnel-layer-l1 .tri-item .tri-label{color:var(--text3)}
+.funnel-layer-l1 .tri-item.core .tri-label{color:var(--accent)}
+.funnel-layer-l1 .tri-item.ctx .tri-label{color:#7c3aed}
+.funnel-layer-l1 .tri-item.scene .tri-label{color:var(--green)}
+.funnel-layer-l1 .tri-item p{color:var(--text2)}
+.funnel-layer-l1 code{background:var(--code-bg);color:var(--orange)}
+.funnel-layer-l1 .tbl th{background:var(--bg3);color:#111}
+.funnel-layer-l1 .tbl td{color:var(--text2)}
+
+/* ===== Funnel Layer Title Bar ===== */
+.funnel-layer-title{
+  text-align:center;
+  margin-bottom:32px;
+}
+.funnel-layer-title .tier-icon{font-size:32px;margin-bottom:8px;display:block}
+.funnel-layer-title .tier-name{font-size:22px;font-weight:800;letter-spacing:1px}
+.funnel-layer-title .tier-sub{font-size:14px;opacity:0.7;margin-top:4px}
+.funnel-layer-l3 .funnel-layer-title .tier-name{color:#fff}
+.funnel-layer-l3 .funnel-layer-title .tier-sub{color:rgba(255,255,255,0.6)}
+.funnel-layer-l2 .funnel-layer-title .tier-name{color:#fff}
+.funnel-layer-l2 .funnel-layer-title .tier-sub{color:rgba(255,255,255,0.6)}
+.funnel-layer-l1 .funnel-layer-title .tier-name{color:var(--funnel-l1-accent)}
+.funnel-layer-l1 .funnel-layer-title .tier-sub{color:var(--text3)}
+
+/* ===== Funnel Transition ===== */
+.funnel-transition{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:36px 0 28px;
+  background:var(--transition-bg);
+  margin:0 -32px;
+  position:relative;
+}
+.funnel-transition .trans-arrow{
+  font-size:28px;
+  color:var(--text3);
+  margin-bottom:8px;
+  animation:bounce-down 2s infinite;
+}
+@keyframes bounce-down{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(6px)}
+}
+.funnel-transition .trans-text{
+  font-size:16px;
+  font-weight:700;
+  color:var(--text3);
+  letter-spacing:1px;
+}
+.funnel-transition .trans-sub{
+  font-size:13px;
+  color:var(--text3);
+  opacity:0.6;
+  margin-top:4px;
+}
+
+/* ===== Cards ===== */
+.card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px 28px;
+  margin-bottom:24px;
+}
+.card h3{font-size:20px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#111}
+.card h3 .icon{font-size:20px}
+.card ul{list-style:none;padding:0}
+.card ul li{padding:4px 0 4px 20px;position:relative;font-size:16px;color:var(--text2);line-height:1.8}
+.card ul li::before{content:'•';position:absolute;left:2px;color:var(--accent);font-weight:700;font-size:18px}
+.card ul li strong{color:#111}
+
+/* ===== Tri-element block ===== */
+.tri{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;display:flex;flex-direction:column;gap:12px}
+.tri-item{padding:12px 16px;border-radius:4px;border-left:3px solid var(--border)}
+.tri-item.core{background:#EFF6FF;border-left-color:var(--accent)}
+.tri-item.ctx{background:#F5F3FF;border-left-color:#7c3aed}
+.tri-item.scene{background:#F0FDF4;border-left-color:var(--green)}
+.tri-item .tri-label{font-size:12px;font-weight:700;letter-spacing:0.5px;margin-bottom:2px}
+.tri-item.core .tri-label{color:var(--accent)}
+.tri-item.ctx .tri-label{color:#7c3aed}
+.tri-item.scene .tri-label{color:var(--green)}
+.tri-item p{color:var(--text2);line-height:1.7;font-size:15px}
+
+/* ===== Quick insights grid ===== */
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.insight-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 20px;
+  font-size:15px;
+  line-height:1.7;
+}
+.insight-card .num{font-size:20px;font-weight:800;color:var(--accent);margin-right:6px}
+.insight-card strong{color:#111}
+
+/* ===== Knowledge Map ===== */
+.kmap{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  margin:20px 0;
+}
+.kmap-row{display:flex;align-items:stretch;gap:12px;margin-bottom:12px}
+.kmap-row:last-child{margin-bottom:0}
+.kmap-label{
+  width:90px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  border-radius:4px;
+  writing-mode:vertical-rl;
+  letter-spacing:2px;
+  flex-shrink:0;
+}
+.kmap-label.l3{background:var(--funnel-l3);color:#fff}
+.kmap-label.l2{background:var(--funnel-l2);color:#fff}
+.kmap-label.l1{background:var(--funnel-l1);color:var(--funnel-l1-accent)}
+.kmap-nodes{display:flex;flex-wrap:wrap;gap:8px;flex:1}
+.kmap-node{
+  padding:6px 14px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:4px;
+  font-size:13px;
+  color:var(--text2);
+}
+
+/* ===== Reading path ===== */
+.path-steps{display:flex;gap:0;margin:16px 0;flex-wrap:wrap}
+.path-step{
+  flex:1;min-width:130px;text-align:center;
+  padding:16px 10px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+}
+.path-step:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.path-step:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.path-step .step-num{
+  width:28px;height:28px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;margin-bottom:6px;
+}
+.path-step.s1 .step-num{background:#EFF6FF;color:var(--accent)}
+.path-step.s2 .step-num{background:#F5F3FF;color:#7c3aed}
+.path-step.s3 .step-num{background:#FFFBEB;color:var(--orange)}
+.path-step .step-title{font-size:14px;font-weight:700;color:#111}
+.path-step .step-desc{font-size:12px;color:var(--text3);margin-top:4px}
+.path-label{font-size:15px;font-weight:700;margin-bottom:8px}
+.path-label.l1-color{color:var(--accent)}
+.path-label.l2-color{color:#7c3aed}
+.path-label.l3-color{color:var(--orange)}
+
+/* ===== Table ===== */
+.tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+.tbl th{background:var(--bg3);color:#111;padding:10px 14px;text-align:left;font-weight:700;font-size:14px;border-bottom:2px solid var(--accent)}
+.tbl td{padding:8px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+
+/* ===== Appendix Glossary ===== */
+.glossary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+.glossary-item{display:flex;gap:8px;padding:10px 14px;background:var(--bg3);border-radius:4px;font-size:15px}
+.glossary-item dt{font-weight:700;color:var(--accent);white-space:nowrap}
+.glossary-item dd{color:var(--text2)}
+
+/* ===== Footer ===== */
+.footer{margin-top:80px;padding:32px 0;border-top:1px solid var(--border);text-align:center}
+.footer p{color:var(--text3);font-size:13px;line-height:1.8}
+
+/* ===== Mobile ===== */
+@media(max-width:900px){
+  .content{padding:24px 16px 60px}
+  .hero h1{font-size:28px}
+  .hero .stats{gap:20px}
+  .tri{gap:10px}
+  .insight-grid{grid-template-columns:1fr}
+  .kmap-row{flex-direction:column}
+  .kmap-label{writing-mode:horizontal-tb;width:auto;padding:8px}
+  .path-steps{flex-direction:column}
+  .path-step{border-radius:0!important}
+  .path-step:first-child{border-radius:var(--radius) var(--radius) 0 0!important}
+  .path-step:last-child{border-radius:0 0 var(--radius) var(--radius)!important}
+  .glossary{grid-template-columns:1fr}
+  .topnav-inner{gap:2px}
+  .topnav .brand{margin-right:8px;font-size:14px}
+  .topnav a{padding:4px 8px;font-size:13px}
+  .funnel-layer-l3{margin:0 -16px;padding:36px 16px 32px}
+  .funnel-layer-l2{margin:0 -8px;padding:36px 8px 32px}
+  .funnel-layer-l1{padding:36px 0 32px}
+  .funnel-tier-medium{width:85%}
+  .funnel-tier-narrow{width:65%}
+  .funnel-transition{margin:0 -16px}
+}
+
+/* ===== Print ===== */
+@media print{
+  .topnav{display:none!important}
+  body{background:#fff;color:#222;font-size:14px}
+  .content{max-width:100%;padding:0}
+  .card,.insight-card,.kmap{border:1px solid #ccc;background:#f9f9f9;break-inside:avoid}
+  .hero h1{color:#333}
+  a{color:#2563EB}
+  strong{color:#222}
+  code{background:#eee;color:#333}
+  .funnel-layer-l3,.funnel-layer-l2,.funnel-layer-l1{background:#fff!important;margin:0!important;padding:20px 0!important}
+  .funnel-layer-l3 .card,.funnel-layer-l2 .card{border:1px solid #ccc;background:#f9f9f9}
+  .funnel-layer-l3 .card h3,.funnel-layer-l2 .card h3,.funnel-layer-l3 .section-header h2,.funnel-layer-l2 .section-header h2{color:#333!important}
+  .funnel-layer-l3 .card ul li,.funnel-layer-l2 .card ul li{color:#444!important}
+  .funnel-transition{background:#f3f3f3!important;margin:0!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<nav class="topnav">
+<div class="topnav-inner">
+<span class="brand">Excel 数据管理</span>
+<a href="#hero">首页</a>
+<a href="#funnel-overview">漏斗全景</a>
+<a href="#kmap">知识地图</a>
+<a href="#insights">观点速查</a>
+<a href="#index">方法论索引</a>
+<span class="sep">|</span>
+<a href="#funnel-l3"><span class="funnel-mark" style="color:var(--funnel-l3)">▲</span>思维</a>
+<a href="#L3-1">第一性原理</a>
+<a href="#L3-2">规范优先</a>
+<a href="#L3-3">自动化思维</a>
+<a href="#L3-4">反常识</a>
+<span class="sep">|</span>
+<a href="#funnel-l2"><span class="funnel-mark" style="color:var(--funnel-l2)">■</span>理论</a>
+<a href="#L2-1">数据模型</a>
+<a href="#L2-2">数据治理</a>
+<a href="#L2-3">ETL流程</a>
+<a href="#L2-4">性能优化</a>
+<a href="#L2-5">协同安全</a>
+<span class="sep">|</span>
+<a href="#funnel-l1"><span class="funnel-mark" style="color:var(--funnel-l1-accent)">●</span>实践</a>
+<a href="#L1-1">规范录入</a>
+<a href="#L1-2">验证清洗</a>
+<a href="#L1-3">查找函数</a>
+<a href="#L1-4">透视表</a>
+<a href="#L1-5">Power Query</a>
+<a href="#L1-6">Power Pivot</a>
+<a href="#L1-7">VBA宏</a>
+<a href="#L1-8">外部数据源</a>
+<a href="#L1-9">可视化报表</a>
+<a href="#L1-10">排错调试</a>
+<span class="sep">|</span>
+<a href="#glossary">术语表</a>
+<a href="#reading">学习顺序</a>
+</div>
+</nav>
+
+<!-- Main Content -->
+<main>
+<div class="content">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+<h1>Excel 文档数据管理</h1>
+<p class="subtitle">漏斗思维重组：先建立思维底座，再构建系统框架，最后落地方法实践</p>
+<div class="stats">
+<div class="stat"><div class="num">4</div><div class="label">底层思维框架</div></div>
+<div class="stat"><div class="num">5</div><div class="label">系统理论维度</div></div>
+<div class="stat"><div class="num">10</div><div class="label">方法实践模块</div></div>
+<div class="stat"><div class="num">20</div><div class="label">核心观点速查</div></div>
+</div>
+</section>
+
+<!-- ============ FUNNEL OVERVIEW ============ -->
+<section id="funnel-overview">
+<div class="funnel-overview-title">🔽 漏斗思维全景图</div>
+<div class="funnel-diagram">
+<a href="#funnel-l3" class="funnel-tier funnel-tier-wide" style="text-decoration:none">
+<div>
+<div class="tier-label">▲ 第一层 · 底层思维</div>
+<div class="tier-desc">为什么 —— 第一性原理、认知模式、反常识观点、价值观与底层假设</div>
+</div>
+</a>
+<div class="funnel-arrow funnel-arrow-top"></div>
+<a href="#funnel-l2" class="funnel-tier funnel-tier-medium" style="text-decoration:none">
+<div>
+<div class="tier-label">■ 第二层 · 系统理论</div>
+<div class="tier-desc">是什么 —— 核心概念定义、知识框架、行业规律、模型与方法论</div>
+</div>
+</a>
+<div class="funnel-arrow funnel-arrow-bottom"></div>
+<a href="#funnel-l1" class="funnel-tier funnel-tier-narrow" style="text-decoration:none">
+<div>
+<div class="tier-label">● 第三层 · 方法实践</div>
+<div class="tier-desc">怎么做 —— 具体操作步骤、工具清单、排错指南、效果验证</div>
+</div>
+</a>
+</div>
+</section>
+
+<!-- ============ KNOWLEDGE MAP ============ -->
+<section class="section" id="kmap">
+<div class="section-header"><h2>🗺️ 知识地图</h2><p>漏斗三层架构全貌一览</p></div>
+<div class="kmap">
+<div class="kmap-row">
+<div class="kmap-label l3">底层思维</div>
+<div class="kmap-nodes">
+<span class="kmap-node">第一性原理</span><span class="kmap-node">规范优先</span><span class="kmap-node">自动化思维</span><span class="kmap-node">反常识认知</span>
+</div></div>
+<div class="kmap-row">
+<div class="kmap-label l2">系统理论</div>
+<div class="kmap-nodes">
+<span class="kmap-node">数据模型结构</span><span class="kmap-node">数据治理体系</span><span class="kmap-node">ETL 流程设计</span><span class="kmap-node">性能优化理论</span><span class="kmap-node">协同安全模型</span>
+</div></div>
+<div class="kmap-row">
+<div class="kmap-label l1">方法实践</div>
+<div class="kmap-nodes">
+<span class="kmap-node">数据规范录入</span><span class="kmap-node">验证与清洗</span><span class="kmap-node">查找函数</span><span class="kmap-node">透视表筛选</span><span class="kmap-node">Power Query</span><span class="kmap-node">Power Pivot</span><span class="kmap-node">VBA 宏</span><span class="kmap-node">外部数据源</span><span class="kmap-node">可视化报表</span><span class="kmap-node">排错调试</span>
+</div></div>
+</div>
+</section>
+
+<!-- ============ CORE INSIGHTS ============ -->
+<section class="section" id="insights">
+<div class="section-header"><h2>⚡ 核心观点速查 20 条</h2><p>一分钟掌握全书精华</p></div>
+<div class="insight-grid">
+<div class="insight-card"><span class="num">01</span><strong>90% 的 Excel 错误</strong>源于数据录入不规范，而非函数不熟练</div>
+<div class="insight-card"><span class="num">02</span><strong>一维表</strong>是 Excel 数据处理的唯一合法数据源结构</div>
+<div class="insight-card"><span class="num">03</span><strong>合并单元格</strong>是排序、筛选、透视表的头号杀手</div>
+<div class="insight-card"><span class="num">04</span><strong>XLOOKUP</strong> 已全面超越 VLOOKUP，新项目优先选用</div>
+<div class="insight-card"><span class="num">05</span><strong>数据验证</strong>从源头锁死错误，比事后排错成本低 10 倍</div>
+<div class="insight-card"><span class="num">06</span><strong>Power Query</strong> 把重复性数据清洗变为一次性投资</div>
+<div class="insight-card"><span class="num">07</span><strong>Power Pivot + DAX</strong> 让 Excel 具备百万级数据分析能力</div>
+<div class="insight-card"><span class="num">08</span><strong>Ctrl+T</strong> 将区域转为"表格"，是自动扩展范围的起点</div>
+<div class="insight-card"><span class="num">09</span><strong>VBA 数组处理</strong>比单元格循环快 90%+，大数据必用</div>
+<div class="insight-card"><span class="num">10</span><strong>CALCULATE</strong> 是 DAX 的灵魂，理解上下文转换是核心</div>
+<div class="insight-card"><span class="num">11</span>文本型数字是 <strong>SUM = 0</strong> 的隐秘元凶</div>
+<div class="insight-card"><span class="num">12</span><strong>增量刷新</strong>让 PQ 刷新时间从小时级降至分钟级</div>
+<div class="insight-card"><span class="num">13</span>透视表切片器实现<strong>多图表联动</strong>，零代码仪表盘核心</div>
+<div class="insight-card"><span class="num">14</span>文件命名规范 <code>YYYYMMDD_部门_类型</code> 消灭版本混乱</div>
+<div class="insight-card"><span class="num">15</span><strong>星型模型</strong>：事实表+维度表是 Power Pivot 最佳结构</div>
+<div class="insight-card"><span class="num">16</span><strong>IFERROR</strong> 不是万能药，掩盖错误比错误本身更危险</div>
+<div class="insight-card"><span class="num">17</span>能用数据验证解决的，别用 VBA；能用透视表的，别建模型</div>
+<div class="insight-card"><span class="num">18</span><strong>DIVIDE</strong> 替代 <code>/</code> 运算，零除报错自动归零</div>
+<div class="insight-card"><span class="num">19</span>Excel 的本质是<strong>数据库思维</strong>，不是排版工具</div>
+<div class="insight-card"><span class="num">20</span>数据驱动的核心：<strong>规范录入 → 自动处理 → 快速汇总 → 清晰呈现</strong></div>
+</div>
+</section>
+
+<!-- ============ METHODOLOGY INDEX ============ -->
+<section class="section" id="index">
+<div class="section-header"><h2>📋 方法论索引</h2><p>按问题类型快速定位方法</p></div>
+<table class="tbl">
+<tr><th>问题类型</th><th>推荐方法</th><th>章节</th></tr>
+<tr><td>数据录入不规范</td><td>数据验证 + 一维表规范 + 模板标准化</td><td><a href="#L1-1">L1-1</a></td></tr>
+<tr><td>脏数据清洗</td><td>Power Query + M 函数 + 条件格式标记</td><td><a href="#L1-2">L1-2</a> / <a href="#L1-5">L1-5</a></td></tr>
+<tr><td>跨表匹配查找</td><td>XLOOKUP → INDEX-MATCH → VLOOKUP</td><td><a href="#L1-3">L1-3</a></td></tr>
+<tr><td>多维汇总分析</td><td>透视表 + 切片器 + 计算字段</td><td><a href="#L1-4">L1-4</a></td></tr>
+<tr><td>重复性数据导入</td><td>Power Query 自动化 + 增量刷新</td><td><a href="#L1-5">L1-5</a></td></tr>
+<tr><td>多表关联建模</td><td>Power Pivot 星型模型 + DAX</td><td><a href="#L1-6">L1-6</a></td></tr>
+<tr><td>批量操作自动化</td><td>VBA 宏录制 → 模块化编码 → 数组优化</td><td><a href="#L1-7">L1-7</a></td></tr>
+<tr><td>外部数据库连接</td><td>Power Query 直连 + SQL 查询 + ODBC</td><td><a href="#L1-8">L1-8</a></td></tr>
+<tr><td>动态报表仪表盘</td><td>透视表 + 切片器 + 条件格式 + 控件</td><td><a href="#L1-9">L1-9</a></td></tr>
+<tr><td>公式错误排查</td><td>F9 分步计算 + 追踪引用 + 错误检查器</td><td><a href="#L1-10">L1-10</a></td></tr>
+</table>
+</section>
+
+<!-- ============ READING PATH ============ -->
+<section class="section" id="path">
+<div class="section-header"><h2>🛤️ 阅读路径建议</h2><p>三条路径，按漏斗思维选择</p></div>
+<div style="margin-bottom:20px">
+<h4 class="path-label l3-color">🔶 路径 A：思维升级（先道后术）</h4>
+<div class="path-steps">
+<div class="path-step s3"><div class="step-num">1</div><div class="step-title">第一性原理</div><div class="step-desc">L3-1 底层思维</div></div>
+<div class="path-step s3"><div class="step-num">2</div><div class="step-title">数据模型</div><div class="step-desc">L2-1 结构理论</div></div>
+<div class="path-step s3"><div class="step-num">3</div><div class="step-title">规范录入</div><div class="step-desc">L1-1 一维表规范</div></div>
+<div class="path-step s3"><div class="step-num">4</div><div class="step-title">反常识</div><div class="step-desc">L3-4 认知升级</div></div>
+</div>
+</div>
+<div style="margin-bottom:20px">
+<h4 class="path-label l2-color">🔸 路径 B：新手入门（0→1）</h4>
+<div class="path-steps">
+<div class="path-step s1"><div class="step-num">1</div><div class="step-title">数据规范</div><div class="step-desc">L1-1 一维表规范</div></div>
+<div class="path-step s1"><div class="step-num">2</div><div class="step-title">验证清洗</div><div class="step-desc">L1-2 数据验证</div></div>
+<div class="path-step s1"><div class="step-num">3</div><div class="step-title">查找函数</div><div class="step-desc">L1-3 XLOOKUP</div></div>
+<div class="path-step s1"><div class="step-num">4</div><div class="step-title">透视表</div><div class="step-desc">L1-4 基础汇总</div></div>
+</div>
+</div>
+<div>
+<h4 class="path-label l1-color">🔹 路径 C：进阶自动化（1→10）</h4>
+<div class="path-steps">
+<div class="path-step s2"><div class="step-num">1</div><div class="step-title">Power Query</div><div class="step-desc">L1-5 ETL 自动化</div></div>
+<div class="path-step s2"><div class="step-num">2</div><div class="step-title">Power Pivot</div><div class="step-desc">L1-6 数据建模</div></div>
+<div class="path-step s2"><div class="step-num">3</div><div class="step-title">VBA 宏</div><div class="step-desc">L1-7 批量自动化</div></div>
+<div class="path-step s2"><div class="step-num">4</div><div class="step-title">仪表盘</div><div class="step-desc">L1-9 交互报表</div></div>
+</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- FUNNEL LAYER 3: FOUNDATIONAL THINKING (TOP - WIDEST) -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="funnel-layer funnel-layer-l3" id="funnel-l3">
+<div class="funnel-layer-title">
+<span class="tier-icon">🧠</span>
+<div class="tier-name">▲ 第一层 · 底层思维</div>
+<div class="tier-sub">为什么 —— 第一性原理、认知模式、反常识观点、价值观与底层假设</div>
+</div>
+
+<section class="section layer3" id="L3-1">
+<div class="layer-badge">底层思维层 · L3</div>
+<div class="section-header"><h2>🧠 3.1 数据第一性原理</h2><p>回归数据管理的本质</p></div>
+
+<div class="card">
+<h3><span class="icon">💡</span>Excel 的本质是什么？</h3>
+<ul>
+<li>Excel 不是"排版工具"，而是<strong>数据库思维的最小可行单元</strong></li>
+<li>本质：连接<strong>业务语言</strong>与<strong>数据语言</strong>的枢纽</li>
+<li>底层逻辑：所有功能（函数/透视表/图表）都建立在<strong>结构化数据</strong>之上</li>
+<li>推论：数据结构混乱 = 一切上层功能失效（GIGO 原则）</li>
+<li>所以：<strong>规范数据 > 学技巧</strong>，先修地基再盖楼</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>Excel 的第一性 = 结构化数据的处理引擎</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"Excel的本质是数据库思维，不是排版工具"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>学习方向选择、工具选型决策、培训体系设计</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔬</span>数据管理的第一性原理推导</h3>
+<ul>
+<li><strong>公理1</strong>：数据的价值在于<strong>回答业务问题</strong></li>
+<li><strong>公理2</strong>：回答问题的前提是<strong>数据可计算</strong></li>
+<li><strong>公理3</strong>：可计算的前提是<strong>数据结构化</strong></li>
+<li>推论链：结构化 → 可计算 → 可回答 → 有价值</li>
+<li>反推：如果数据不结构化，后续一切努力都是空中楼阁</li>
+<li>实践含义：每次新建表格，先问"这个结构能被计算吗？"</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>第一性原理揭示：数据管理的一切从"结构化"开始</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"数据驱动能力的成长，是一个从基础到高阶，再反哺基础的迭代过程"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>评估数据资产质量、设计数据录入规范、建立数据文化</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer3" id="L3-2">
+<div class="layer-badge">底层思维层 · L3</div>
+<div class="section-header"><h2>📏 3.2 规范优先思维</h2><p>先立规矩，再干活</p></div>
+
+<div class="card">
+<h3><span class="icon">⚖️</span>规范 vs 技巧的投资回报</h3>
+<ul>
+<li>花 1 小时建立规范 → 节省未来 100 小时排错</li>
+<li>花 1 小时学技巧 → 节省当前 1 小时操作</li>
+<li>规范是<strong>复利投资</strong>，技巧是<strong>单次消费</strong></li>
+<li>90% 的"技巧不够用"问题，本质是"规范没建好"</li>
+<li>思维转变：从"我要学更多函数"→"我要让数据更规范"</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>规范优先 = 从源头消灭问题，而非事后修补</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"前期偷的懒，全变成了后期加班的坑"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>新项目启动、团队培训、个人学习路径规划</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🏗️</span>三层规范体系</h3>
+<ul>
+<li><strong>结构规范</strong>：一维表、无合并、无空行、字段唯一</li>
+<li><strong>类型规范</strong>：日期是日期、数字是数字、文本是文本，绝不混用</li>
+<li><strong>流程规范</strong>：统一模板→数据验证→格式锁定→版本管理</li>
+<li>规范的本质：<strong>降低人为错误的概率</strong>，而非限制自由</li>
+<li>规范的最高境界：让"做错"比"做对"更难</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>规范不是束缚，是让正确成为默认选项</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"用数据验证限制输入格式，从源头杜绝数据问题"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>模板设计、团队标准制定、数据质量管控</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer3" id="L3-3">
+<div class="layer-badge">底层思维层 · L3</div>
+<div class="section-header"><h2>⚙️ 3.3 自动化思维</h2><p>能自动的绝不手动</p></div>
+
+<div class="card">
+<h3><span class="icon">🔄</span>自动化的核心逻辑</h3>
+<ul>
+<li>核心公式：<strong>一次性投资建设 = 终身复用收益</strong></li>
+<li>判断标准：一件事重复做 3 次以上 → 必须自动化</li>
+<li>自动化递进路径：公式 → 透视表 → Power Query → VBA → Power Automate</li>
+<li>工具选择原则：<strong>最低成本原则</strong>——能用公式不用 VBA，能用 PQ 不用代码</li>
+<li>自动化的本质：把人的精力从"机械执行"释放到"创造性思考"</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>自动化不是目的，释放创造力才是</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"从被动响应、重复劳动，转变为主动设计、一键输出"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>重复性报表、定期数据汇总、批量操作决策</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🎯</span>自动化选型决策树</h3>
+<ul>
+<li>Q1：数据是否需要从外部导入？→ 是 → Power Query</li>
+<li>Q2：是否需要多表关联分析？→ 是 → Power Pivot + DAX</li>
+<li>Q3：是否需要批量操作/跨应用交互？→ 是 → VBA</li>
+<li>Q4：是否只需简单汇总？→ 是 → 透视表 + 切片器</li>
+<li>Q5：是否需要跨系统定时调度？→ 是 → Power Automate</li>
+<li>底层原则：L1 工具能解决的，不要升级到 L2/L3 工具</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>工具是服务于目标的手段，而非目标本身</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"能用数据验证解决的，不必用 VBA；能用透视表的，不必建 Power Pivot 模型"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>技术选型、培训规划、项目方案设计</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer3" id="L3-4">
+<div class="layer-badge">底层思维层 · L3</div>
+<div class="section-header"><h2>🔥 3.4 反常识认知</h2><p>你以为的常识，可能正在限制你</p></div>
+
+<div class="card">
+<h3><span class="icon">💡</span>五大反常识观点</h3>
+<ul>
+<li><strong>反常识1</strong>：学更多函数 ≠ 更高效。3类核心函数（查找+条件+聚合）解决 90% 问题</li>
+<li><strong>反常识2</strong>：表格做得"好看"往往是灾难。合并单元格、花哨配色 = 功能瘫痪</li>
+<li><strong>反常识3</strong>：IFERROR 不是万能药。掩盖错误比错误本身更危险——沉默的 Bug 最致命</li>
+<li><strong>反常识4</strong>：Excel 不会过时。它是数据驱动思维最普适的实践载体</li>
+<li><strong>反常识5</strong>："会用 Excel"≠ 会数据管理。多数人会用工具，少数人会用思维</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>突破"会操作=会管理"的认知陷阱</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"Excel强的人，本质是逻辑强、效率高、靠谱"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>个人认知升级、团队培训理念、工具选型决策</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🎯</span>高手与普通人的差异本质</h3>
+<ul>
+<li>普通人用<strong>体力</strong>做 Excel → 重复劳动、越做越累</li>
+<li>高手用<strong>逻辑</strong>做 Excel → 一次设置、终身复用</li>
+<li>核心差异不在技巧数量，在于<strong>工作流设计能力</strong></li>
+<li>高手工作流：规范录入 → 自动处理 → 快速汇总 → 清晰呈现</li>
+<li>最高境界：人越来越轻松，表越来越专业</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>差异的本质是思维方式，不是操作速度</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"不是谁更努力，而是谁更会用工具"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>个人能力提升规划、团队效率优化、培训目标设定</p></div>
+</div>
+</div>
+</section>
+</div>
+
+<!-- ===== FUNNEL TRANSITION 1 ===== -->
+<div class="funnel-transition">
+<div class="trans-arrow">⬇</div>
+<div class="trans-text">思维奠定方向 → 理论构建框架</div>
+<div class="trans-sub">从"为什么"到"是什么"：底层认知收束为系统模型</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- FUNNEL LAYER 2: SYSTEM THEORY (MIDDLE) -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="funnel-layer funnel-layer-l2" id="funnel-l2">
+<div class="funnel-layer-title">
+<span class="tier-icon">🏛️</span>
+<div class="tier-name">■ 第二层 · 系统理论</div>
+<div class="tier-sub">是什么 —— 核心概念定义、知识框架、行业规律、模型与方法论</div>
+</div>
+
+<section class="section layer2" id="L2-1">
+<div class="layer-badge">系统理论层 · L2</div>
+<div class="section-header"><h2>🧬 2.1 数据模型与结构</h2><p>从"表格思维"到"数据库思维"</p></div>
+
+<div class="card">
+<h3><span class="icon">🗃️</span>数据库范式与 Excel 实践</h3>
+<ul>
+<li><strong>第一范式</strong>：每列不可再拆分（杜绝"姓名+手机号"一列多属性）</li>
+<li><strong>第二范式</strong>：消除部分依赖（每列必须直接依赖主键）</li>
+<li><strong>第三范式</strong>：消除传递依赖（部门名称不应出现在员工表，应关联部门表）</li>
+<li>Excel 实践：事实表（销售记录）+ 维度表（客户/产品/时间）= 星型模型</li>
+<li>反范式设计：适度冗余可简化查询，但需维护一致性</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>数据库范式是数据结构设计的理论基础，Excel 同样适用</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"严格遵循数据库范式原则，将原始业务拆解为事实表与维度表"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多表关联设计、Power Pivot 建模、数据仓库构建</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">⭐</span>星型模型 vs 雪花模型</h3>
+<ul>
+<li><strong>星型模型</strong>：一个事实表 + 多个维度表直接关联，结构简单查询快</li>
+<li><strong>雪花模型</strong>：维度表本身还有次级维度（产品→品类→部门），更规范但查询复杂</li>
+<li>Excel/Power Pivot 推荐<strong>星型模型</strong>：结构清晰、DAX 公式简单、性能更优</li>
+<li>关键设计：每张表设置主键（如客户ID、产品SKU），通过外键关联</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>星型模型是 Excel 数据建模的最佳实践</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"事实表连接多个维度表，一次建模多次复用"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>Power Pivot 多表分析、销售-客户-产品关联模型</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">📐</span>一维表 vs 二维表的结构差异</h3>
+<ul>
+<li><strong>一维表</strong>（清单表）：行=记录，列=属性 → Excel/数据库的标准格式</li>
+<li><strong>二维表</strong>（交叉表）：行和列都是维度 → 适合展示，不适合分析</li>
+<li>一维→二维：透视表/Power Query 透视列</li>
+<li>二维→一维：Power Query 逆透视列（核心操作）</li>
+<li>黄金法则：<strong>存储用一维表，展示用二维表</strong></li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>数据存储与数据展示是两个不同需求，用不同结构满足</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"一维表是所有 Excel 功能能够正常运行的前提"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>数据录入规范设计、报表系统架构、BI 数据准备</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer2" id="L2-2">
+<div class="layer-badge">系统理论层 · L2</div>
+<div class="section-header"><h2>🏛️ 2.2 数据治理体系</h2><p>从个人习惯到组织规范</p></div>
+
+<div class="card">
+<h3><span class="icon">📋</span>数据治理五大支柱</h3>
+<ul>
+<li><strong>数据标准化</strong>：定义、格式、命名规则，消除歧义</li>
+<li><strong>数据资产目录</strong>：梳理全公司数据资源，形成目录和地图</li>
+<li><strong>数据质量管理</strong>：录入、清洗、校验、更新的流程和责任人</li>
+<li><strong>数据安全与合规</strong>：权限分级、访问控制、脱敏机制</li>
+<li><strong>数据生命周期管理</strong>：采集→存储→使用→归档→销毁</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>数据治理不是 IT 部门的事，是组织级的顶层设计</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"没有平台时，用制度、协作和现有工具的组合拳，依然可以破局"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>企业数字化转型、跨部门数据共享、数据质量提升</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🏷️</span>主数据管理（无平台方案）</h3>
+<ul>
+<li>核心逻辑：<strong>主数据管理 = 标准共识 + 人工管控</strong></li>
+<li>人工指定 Owner：明确每个主数据领域的责任部门</li>
+<li>Excel + 审批流：用 OA 设置变更审批流程</li>
+<li>定期人工稽核：每月抽查重复率、字段完整性</li>
+<li>强制命名规范：客户编码 = 区域缩写+行业代码+流水号</li>
+<li>案例：某制造业无平台方案，主数据重复率从 37% 降至 8%</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>没有平台不是不治理的借口，规则先行，工具跟上</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"Excel 也可以治理主数据，要是在线版 Excel 就更棒了"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>中小企业数据治理、起步阶段数字化转型</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer2" id="L2-3">
+<div class="layer-badge">系统理论层 · L2</div>
+<div class="section-header"><h2>🔄 2.3 ETL 流程设计</h2><p>Extract-Transform-Load 在 Excel 中的实现</p></div>
+
+<div class="card">
+<h3><span class="icon">📤</span>Excel ETL 全链路</h3>
+<ul>
+<li><strong>Extract</strong>：Power Query 从多源获取数据（Excel/CSV/DB/Web/API）</li>
+<li><strong>Transform</strong>：PQ 编辑器清洗转换（去重/拆分/合并/类型转换/分组）</li>
+<li><strong>Load</strong>：加载到工作表/数据模型（Power Pivot）</li>
+<li><strong>Automate</strong>：设置刷新频率 + 增量刷新 + Power Automate 触发</li>
+<li><strong>Validate</strong>：条件格式 + 数据验证 + 差异对比确保质量</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>Excel ETL = Power Query(ET) + Power Pivot(L+分析) + 自动化(调度)</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"构建一套完整的数据分析体系：采集→筛选→汇总→可视化→自动报告"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>月度报表自动化、多源数据整合、数据仓库构建</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔀</span>Power Query 合并策略</h3>
+<ul>
+<li><strong>追加查询</strong>（UNION）：纵向拼接结构相同的表（12个月报表合一）</li>
+<li><strong>合并查询</strong>（JOIN）：横向关联不同表（订单+客户信息）</li>
+<li>JOIN 类型：左外部/右外部/完全外部/内部/左反/右反</li>
+<li>文件夹合并：自动扫描+合并新增文件，动态扩展</li>
+<li>模糊匹配：<code>Table.FuzzyGroup</code> 处理近似文本（如"北京"/"北京市"）</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>追加=上下拼、合并=左右连，选择取决于业务需求</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"追加查询和合并查询，把数据像拼乐高一样组合"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多分公司报表合并、多表关联查询、历史数据追加</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer2" id="L2-4">
+<div class="layer-badge">系统理论层 · L2</div>
+<div class="section-header"><h2>🚀 2.4 性能优化理论</h2><p>从"能用"到"好用"的关键跨越</p></div>
+
+<div class="card">
+<h3><span class="icon">📈</span>Excel 性能瓶颈与优化策略</h3>
+<ul>
+<li><strong>公式层</strong>：易失性函数（NOW/INDIRECT/OFFSET）触发全表重算 → 减少使用</li>
+<li><strong>数据层</strong>：Ctrl+T 表格自动扩展 vs 整列引用（A:A）→ 表格引用更优</li>
+<li><strong>透视表层</strong>：取消"刷新时更新所有透视表" → 手动控制刷新</li>
+<li><strong>VBA 层</strong>：数组处理 > 单元格循环；关闭 ScreenUpdating/Calculation</li>
+<li><strong>Power Query</strong>：折叠查询 + 增量刷新 + 减少加载列数</li>
+<li><strong>Power Pivot</strong>：用度量值替代计算列；VAR 减少重复计算；TOPN 替代 RANKX</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>性能优化 = 减少计算量 + 内存批处理 + 按需加载</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"产品数量超过5000时，RANKX性能显著下降，改用TOPN速度提升60%"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>百万行数据处理、复杂模型卡顿、定时任务超时</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">📏</span>查找函数性能对比</h3>
+<table class="tbl">
+<tr><th>方案</th><th>10万行×500次耗时</th><th>内存峰值</th><th>推荐场景</th></tr>
+<tr><td>VLOOKUP+辅助列</td><td>842ms</td><td>12.3MB</td><td>兼容旧版本</td></tr>
+<tr><td>INDEX+MATCH</td><td>617ms</td><td>9.1MB</td><td>大数据量</td></tr>
+<tr><td>XLOOKUP 布尔向量</td><td>403ms</td><td>7.8MB</td><td>新项目首选</td></tr>
+<tr><td>SUMPRODUCT 多条件</td><td>1129ms</td><td>18.6MB</td><td>旧版兼容（不推荐）</td></tr>
+</table>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>XLOOKUP 综合最优；INDEX-MATCH 兼容性最佳</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"大数据量：INDEX-MATCH 性能最优；复杂逻辑：XLOOKUP 代码最简洁"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>函数选型决策、性能调优、版本兼容性评估</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer2" id="L2-5">
+<div class="layer-badge">系统理论层 · L2</div>
+<div class="section-header"><h2>🔐 2.5 协同与安全模型</h2><p>从个人工具到团队资产</p></div>
+
+<div class="card">
+<h3><span class="icon">👥</span>协同办公方案</h3>
+<ul>
+<li><strong>OneDrive/SharePoint</strong>：云端存储 + 版本历史 + 多人同时编辑</li>
+<li><strong>Excel Online</strong>：浏览器端协作，无版本冲突</li>
+<li><strong>共享工作簿</strong>（传统）：本地网络共享，冲突解决能力弱</li>
+<li>协作规范：统一模板 + 命名规则 + 修订追踪 + 评论批注</li>
+<li>版本命名：<code>Dashboard_v{主}.{次}_{YYYYMMDD}.xlsx</code></li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>协同的核心 = 单一数据源 + 版本可追溯 + 冲突可解决</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"版本混乱：文件多次转发和修改，难以追溯最新版本"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多人录入表、跨部门报表、远程团队协作</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔒</span>数据安全四层防护</h3>
+<ul>
+<li><strong>文件级</strong>：工作簿密码保护（打开/修改密码）</li>
+<li><strong>结构级</strong>：工作表保护 + 区域锁定（审阅→保护工作表）</li>
+<li><strong>单元格级</strong>：锁定含公式的单元格，允许编辑输入区域</li>
+<li><strong>宏安全</strong>：信任中心→禁用宏+通知；信任位置白名单</li>
+<li>敏感数据脱敏：身份证/手机号用 <code>=LEFT(A1,3)&"****"&RIGHT(A1,4)</code></li>
+<li>文档检查器：发布前清除隐藏信息/个人信息</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>安全是分层递进的，从文件→结构→单元格→宏逐级深入</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"权限难控：敏感数据易泄露，数据安全隐患大"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>含敏感数据的报表、宏分发、对外共享文件</p></div>
+</div>
+</div>
+</section>
+</div>
+
+<!-- ===== FUNNEL TRANSITION 2 ===== -->
+<div class="funnel-transition">
+<div class="trans-arrow">⬇</div>
+<div class="trans-text">理论构建框架 → 实践精准落地</div>
+<div class="trans-sub">从"是什么"到"怎么做"：系统模型收束为操作步骤</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- FUNNEL LAYER 1: METHOD PRACTICE (BOTTOM - NARROWEST) -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="funnel-layer funnel-layer-l1" id="funnel-l1">
+<div class="funnel-layer-title">
+<span class="tier-icon">🛠️</span>
+<div class="tier-name">● 第三层 · 方法实践</div>
+<div class="tier-sub">怎么做 —— 具体操作步骤、工具清单、排错指南、效果验证</div>
+</div>
+
+<section class="section layer1" id="L1-1">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>📐 1.1 数据规范与录入</h2><p>从源头杜绝 90% 的表格问题</p></div>
+
+<div class="card">
+<h3><span class="icon">📊</span>一维表黄金规范</h3>
+<ul>
+<li>每行 = 一条独立记录，每列 = 一个不可拆分属性</li>
+<li>第一行 = 不重复、不空缺的列标题（字段名）</li>
+<li>整个数据区域：<strong>无合并单元格、无空行空列、无复合表头</strong></li>
+<li>反面案例：1-12月做列标题的"二维表"、合并单元格的部门分组表</li>
+<li>正面案例：订单号 | 订单日期 | 产品 | 销量 | 区域 —— 每行一笔订单</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>一维表是 Excel 所有功能（函数、透视表、图表）能正常运行的唯一数据源标准</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"Excel 里 90% 的计算错误、统计失效、反复返工，根源都不在技巧，而在于录入不规范"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>人事信息表、销售明细表、库存台账——任何需要后续分析的数据源</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🚫</span>六大致命录入坏习惯</h3>
+<ul>
+<li><strong>合并单元格滥用</strong> → 排序/筛选/透视表全面失效</li>
+<li><strong>隐形空格/特殊字符</strong> → VLOOKUP 匹配失败、去重失效</li>
+<li><strong>日期格式混乱</strong> → 透视表无法按年月分组</li>
+<li><strong>文本与数值不分</strong> → SUM = 0、透视表只能计数不能求和</li>
+<li><strong>一列多属性</strong>（如"姓名+手机号"）→ 无法拆分统计</li>
+<li><strong>空行空列/随意换行</strong> → Ctrl+↓ 定位失效、批量操作出错</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>坏习惯看似微小，连锁反应可导致全表分析瘫痪</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"一个隐形空格，能让所有查找匹配函数全面失效"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>系统导出数据、手工录入表、跨部门汇总表</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">📋</span>文件与字段命名规范</h3>
+<ul>
+<li>文件名：<code>YYYYMMDD_部门_业务类型_项目名.xlsx</code></li>
+<li>列标题：唯一、简洁、无特殊字符、避免纯数字</li>
+<li>日期统一 <code>YYYY-MM-DD</code>，金额固定单位（万元/元）</li>
+<li>版本控制：建立旧版/新版文件夹，每次修改记录修订人+日期+变更</li>
+<li>主键字段：8位数字流水号，确保每行唯一标识</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>命名规范是数据可追溯、可协作的基础设施</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"85% 的企业因 Excel 数据管理不当导致至少一次决策失误，平均损失 20 万元/年"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多人协作文件、定期报表、跨部门数据交换</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔒</span>三步规范录入流程</h3>
+<ul>
+<li><strong>立规矩</strong>：吃透一维表规范，建立录入黄金准则</li>
+<li><strong>锁规则</strong>：用数据验证限制输入格式（日期/数字/下拉列表）</li>
+<li><strong>统格式</strong>：用 Ctrl+T 转表格 + 条件格式异常标记 + 批量格式刷</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>三步流程从源头锁死 90% 的录入错误</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"立规矩→锁规则→统格式，帮你从源头杜绝表格问题"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>新建数据表、修正已混乱的旧表、团队统一录入规范</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-2">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🧹 1.2 数据验证与清洗</h2><p>从源头锁死错误 + 批量修正脏数据</p></div>
+
+<div class="card">
+<h3><span class="icon">🔐</span>数据验证（Data Validation）操作清单</h3>
+<ul>
+<li><strong>整数/小数范围</strong>：限制输入 0-100 的成绩、正数的金额</li>
+<li><strong>日期范围</strong>：限制入职日期 ≤ 今天，不允许未来日期</li>
+<li><strong>下拉列表</strong>：部门、区域、产品类别从列表选择，杜绝拼写不一致</li>
+<li><strong>自定义公式</strong>：如 <code>=COUNTIF(A:A,A1)=1</code> 防止重复值</li>
+<li><strong>输入提示</strong>：选中单元格时显示"请输入8位工号"</li>
+<li><strong>出错警告</strong>：样式选"停止"，强制阻止非法输入</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>数据验证是最低成本的质量保障，从源头拦截比事后修正成本低 10 倍</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"用数据验证功能限制输入格式，从源头杜绝数据问题"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多人录入表、模板分发、敏感字段管控</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🧼</span>数据清洗操作手册</h3>
+<ul>
+<li><strong>去重</strong>：数据→删除重复项；或 Power Query "删除重复项"</li>
+<li><strong>去空格</strong>：<code>=TRIM()</code> 去首尾空格；<code>=CLEAN()</code> 去不可打印字符</li>
+<li><strong>文本→数值</strong>：分列→常规；或 <code>=VALUE()</code>；或乘以1</li>
+<li><strong>文本日期→真日期</strong>：分列→日期格式；或 <code>=DATEVALUE()</code></li>
+<li><strong>统一大小写</strong>：<code>=UPPER()/LOWER()/PROPER()</code></li>
+<li><strong>批量替换</strong>：Ctrl+H 替换；条件格式标记异常值</li>
+<li><strong>分列拆分</strong>：数据→分列，按分隔符/固定宽度拆分</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>清洗核心：类型统一、格式一致、去除冗余、补全缺失</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"一份干净的数据表，比100个炫酷图表更有价值"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>系统导出数据、跨系统合并、历史数据整理</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔍</span>异常值检测方法</h3>
+<ul>
+<li><strong>条件格式</strong>：突出显示 > 部分规则 → 重复值/空值/超出范围</li>
+<li><strong>数据透视表校验</strong>：快速统计各维度汇总，发现异常记录</li>
+<li><strong>ISTEXT/ISNUMBER</strong>：批量校验列内数据类型一致性</li>
+<li><strong>LEN()</strong>：检查字段长度异常（如手机号≠11位）</li>
+<li><strong>唯一值计数</strong>：透视表计数 vs 去重计数，差值 = 重复量</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>先检测再清洗，避免盲目操作导致数据丢失</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"条件格式可一键标记所有错误单元格"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>数据质量审计、入库前校验、定期巡检</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-3">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🔎 1.3 公式与查找函数</h2><p>VLOOKUP → INDEX-MATCH → XLOOKUP → 动态数组</p></div>
+
+<div class="card">
+<h3><span class="icon">🔁</span>XLOOKUP：现代查找终极方案</h3>
+<ul>
+<li>语法：<code>=XLOOKUP(查找值, 查找范围, 返回范围, [未找到], [匹配模式], [搜索模式])</code></li>
+<li>支持<strong>任意方向</strong>查找（左查右、右查左）</li>
+<li>内置 <code>[if_not_found]</code>，告别 IFERROR 嵌套</li>
+<li>返回多列：<code>=XLOOKUP(A2, 工号列, {姓名列,部门列,薪资列})</code></li>
+<li>多条件：<code>=XLOOKUP(1, (部门="销售")*(级别="经理"), 姓名列)</code></li>
+<li>倒序搜索：<code>search_mode = -1</code>，找最后一次出现的记录</li>
+<li>二分查找：<code>search_mode = 2/-2</code>，万行级数据提速显著</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>XLOOKUP 统一了 VLOOKUP/HLOOKUP/INDEX-MATCH 的功能，语法更简洁</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"日常新文件 → 直接用 XLOOKUP；维护旧系统 → 继续用 VLOOKUP"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>跨表匹配、多条件查询、反向查找、返回多列</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">⚙️</span>INDEX-MATCH：灵活精准的黄金组合</h3>
+<ul>
+<li>语法：<code>=INDEX(返回范围, MATCH(查找值, 查找范围, 0))</code></li>
+<li>双向查找：<code>=INDEX(区域, MATCH(行值, 行标题, 0), MATCH(列值, 列标题, 0))</code></li>
+<li>多条件：<code>=INDEX(返回列, MATCH(1, (条件1)*(条件2), 0))</code></li>
+<li>大数据量性能最优（实测 10 万行 × 500 次查找，INDEX-MATCH 快于 VLOOKUP 26%）</li>
+<li>兼容 Excel 2003+，无需 365 订阅</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>INDEX-MATCH 是兼容性+性能的最佳平衡点</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"大数据量：INDEX-MATCH 性能最优；复杂逻辑：XLOOKUP 代码最简洁"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>需兼容旧版本、超大数据集、矩阵式双向查找</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">⚡</span>动态数组函数（365/2021+）</h3>
+<ul>
+<li><strong>FILTER</strong>：<code>=FILTER(数据区域, 条件)</code> 替代高级筛选，结果自动溢出</li>
+<li><strong>SORT</strong>：<code>=SORT(数组, [排序依据], [顺序])</code> 动态排序</li>
+<li><strong>UNIQUE</strong>：<code>=UNIQUE(范围)</code> 一键去重列表</li>
+<li><strong>LET</strong>：<code>=LET(x, 复杂计算, y, 另一计算, x+y)</code> 减少重复计算</li>
+<li><strong>LAMBDA</strong>：自定义函数，如 <code>=LAMBDA(x, x^2+1)</code></li>
+<li>组合示例：<code>=SORT(FILTER(A2:D100, C2:C100="北京"))</code></li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>动态数组让 Excel 从"单元格计算"进化为"数组编程"</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"FILTER + 动态数组替代 VBA 实现高度自定义筛选逻辑"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>动态报表、交互式查询、替代复杂数组公式</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🛡️</span>错误处理函数选择</h3>
+<ul>
+<li><strong>IFERROR</strong>：统一捕获所有错误 → <code>=IFERROR(VLOOKUP(...), "未匹配")</code></li>
+<li><strong>IFNA</strong>：仅捕获 #N/A → 保留其他错误不被掩盖（推荐）</li>
+<li><strong>ISERR vs ISERROR</strong>：ISERR 不将 #N/A 视为错误，可保留匹配失败标记</li>
+<li>⚠️ 过度使用 IFERROR 掩盖错误比错误本身更危险</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>选择精确的错误处理函数，而非一刀切地掩盖</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"62% 的职场人因未设置错误捕获函数，导致报表出现大面积 #N/A"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>VLOOKUP/XLOOKUP 容错、除法零值保护、批量报表美化</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-4">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>📊 1.4 数据透视表与高级筛选</h2><p>Excel 数据分析的瑞士军刀</p></div>
+
+<div class="card">
+<h3><span class="icon">📈</span>透视表核心操作</h3>
+<ul>
+<li>创建前提：数据源必须是一维表 + 无合并单元格 + 无空行空列</li>
+<li>四区域配置：行（维度）、列（维度）、值（度量）、筛选器（切片）</li>
+<li>值字段设置：求和/计数/平均值/最大值/最小值，可自定义计算方式</li>
+<li>分组功能：日期自动按年/季/月分组；数值自定义区间分组</li>
+<li>计算字段：<code>=销售额-成本</code> 在透视表内创建利润字段</li>
+<li>刷新机制：数据源更新后右键→刷新；或全部刷新</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>透视表将数据汇总从"写公式"降维为"拖字段"</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"数据透视表是 Excel 最强大的分析工具之一"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>销售汇总、人事统计、财务分析——任何多维汇总场景</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🎯</span>高级筛选与排序技巧</h3>
+<ul>
+<li><strong>多条件排序</strong>：排序→添加条件，按优先级设置主/次关键字</li>
+<li><strong>自定义序列排序</strong>：如按"华东→华南→华北→西南"自定义顺序</li>
+<li><strong>按颜色排序/筛选</strong>：排序依据选"单元格颜色"→将红色逾期行置顶</li>
+<li><strong>高级筛选</strong>：在条件区域设置多条件复合筛选 + 提取不重复值到新位置</li>
+<li><strong>切片器</strong>：插入切片器实现一键维度切换 + 多透视表联动</li>
+<li>⚠️ 排序前必须选中完整数据源，否则行列错位</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>高级筛选的"条件区域"写法 = 数据库查询的 AND/OR 逻辑</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"高级筛选秒杀普通筛选的天花板玩法"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多维度交叉分析、颜色标记数据归类、条件提取</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔗</span>切片器联动机制</h3>
+<ul>
+<li>插入切片器：选中透视表→分析→插入切片器</li>
+<li>多表联动：右键切片器→报表连接→勾选其他透视表</li>
+<li>时间轴控件：专用于日期字段的区间选择器</li>
+<li>切片器样式自定义：调整列数、按钮大小、配色</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>一个切片器控制 N 个透视表 = 零代码交互式仪表盘</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"点击任意一个切片器，仪表盘上所有的图表都会联动变化"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>管理驾驶舱、月度经营分析、多维度对比报表</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-5">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🔄 1.5 Power Query 数据获取与转换</h2><p>从重复劳动到一次性投资</p></div>
+
+<div class="card">
+<h3><span class="icon">📥</span>Power Query 数据源全家族</h3>
+<ul>
+<li><strong>Excel 工作簿</strong>：单个文件或整个文件夹（自动合并多文件）</li>
+<li><strong>CSV/文本</strong>：自动识别编码（UTF-8/GBK），告别乱码</li>
+<li><strong>SQL Server/MySQL/Oracle</strong>：直连数据库，可写 SQL 查询</li>
+<li><strong>Web 网页</strong>：抓取网页表格数据，零代码爬虫</li>
+<li><strong>JSON/API</strong>：解析 API 返回的 JSON，层层展开</li>
+<li><strong>文件夹</strong>：自动合并同结构文件，新增文件自动捕获</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>Power Query 是 Excel 的数据"翻译官"，10+ 数据源统一入口</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"Power Query 堪称数据界的'瑞士军刀'，支持 10+ 数据源无缝对接"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>月度报表合并、数据库数据拉取、网页数据抓取、API 数据对接</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🧰</span>Power Query 清洗转换操作</h3>
+<ul>
+<li><strong>删除操作</strong>：删除空行/空列/重复项/错误行</li>
+<li><strong>拆分/合并列</strong>：按分隔符拆分、合并多列</li>
+<li><strong>透视/逆透视</strong>：二维表→一维表（逆透视），一维→二维（透视）</li>
+<li><strong>分组聚合</strong>：Table.Group 多级分组 + 多聚合函数</li>
+<li><strong>追加/合并查询</strong>：纵向拼接（UNION）/ 横向关联（JOIN）</li>
+<li><strong>条件列</strong>：if…then…else 新增计算列</li>
+<li>所有操作自动记录为步骤，可随时撤销/修改，全过程可追溯</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>PQ 的核心优势：操作即代码，代码可复现，一劳永逸</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"把重复的导入工作录制成步骤，下次一键执行"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>月度合并报表、多源数据整合、定期刷新的 ETL 流程</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">💻</span>M 语言核心语法</h3>
+<ul>
+<li><strong>严格区分大小写</strong>：<code>List.Sum</code> 正确，<code>list.sum</code> 报错</li>
+<li>三大数据结构：<strong>Table</strong>（表）、<strong>Record</strong>（行/记录）、<strong>List</strong>（列/列表）</li>
+<li>提取语法：表{0} = 第一行；表[字段名] = 整列；表{0}[字段名] = 单元格</li>
+<li><code>each _</code> = 匿名函数简写：<code>each [销售额] > 1000</code></li>
+<li>let…in 结构：定义多步骤，返回最终结果</li>
+<li>常用函数：<code>Table.SelectRows</code>、<code>Table.AddColumn</code>、<code>Table.Combine</code>、<code>Text.Trim</code></li>
+<li>调试神器：编辑器中输入 <code>= #shared</code> 查看全部 M 函数库</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>从"点击操作"到"M 函数"是从使用者到驾驭者的跃迁</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"掌握 M 函数的本质，是从'使用软件'到'驾驭工具'的跃迁"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>动态文件合并、复杂条件清洗、自定义函数复用</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🚀</span>增量刷新与性能优化</h3>
+<ul>
+<li><strong>增量刷新</strong>：仅加载新增数据，刷新时间从小时级降至分钟级</li>
+<li>前提：源表需含时间戳列</li>
+<li>配置：高级编辑器中添加日期筛选 + Power Automate 定时更新参数</li>
+<li><strong>折叠查询</strong>：尽量在数据源端筛选（SQL 端 WHERE），减少加载到 PQ 的数据量</li>
+<li><strong>避免早期折叠中断</strong>：先做数据源端操作，再逐步转换</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>增量刷新是 PQ 从"好用"到"企业级"的关键升级</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"某电商公司用增量刷新把每日数据更新时间从2小时压缩到8分钟"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>百万级数据集、每日刷新场景、数据库直连报表</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-6">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🏗️ 1.6 Power Pivot 与 DAX</h2><p>让 Excel 具备百万级数据分析能力</p></div>
+
+<div class="card">
+<h3><span class="icon">🌍</span>Power Pivot 核心架构</h3>
+<ul>
+<li><strong>VertiPaq 列式引擎</strong>：内存级压缩，千万行数据秒级响应</li>
+<li><strong>关系模型</strong>：替代 VLOOKUP 的表关联，一次建模永久复用</li>
+<li><strong>星型模型</strong>：事实表（销售记录）+ 维度表（客户/产品/时间）</li>
+<li>关系类型：一对多（最常见）、一对一、多对多（需桥接表）</li>
+<li>双向筛选：既可按地区看产品，也可按产品查区域</li>
+<li>⚠️ 避免循环引用（A→B 且 B→A）</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>Power Pivot = Excel 的数据库引擎，透视表的终极升级版</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"传统透视表百万行性能断崖式下降，Power Pivot 千万级数据轻松处理"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>多表关联分析、大数据量汇总、企业级分析模型</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">📐</span>DAX 五大核心函数</h3>
+<ul>
+<li><strong>CALCULATE</strong>：修改计算上下文，DAX 的灵魂 → <code>CALCULATE(SUM(Sales[Amount]), Sales[Region]="East")</code></li>
+<li><strong>SUMX/AVERAGEX</strong>：行级迭代计算 → <code>SUMX(Orders, Orders[Qty]*Orders[Price])</code></li>
+<li><strong>RELATED/RELATEDTABLE</strong>：跨表引用 → <code>RELATED(Products[Category])</code></li>
+<li><strong>FILTER/ALL/VALUES</strong>：筛选控制 → <code>FILTER(Products, Products[Category]="电子")</code></li>
+<li><strong>时间智能</strong>：DATEADD/SAMEPERIODLASTYEAR → 同比/环比一键计算</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>CALCULATE + 上下文转换 = DAX 的核心密码</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"CALCULATE 是 DAX 中最强大也最容易引发困惑的函数"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>条件聚合、同比环比、占比计算、动态排名</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">⚠️</span>DAX 三大陷阱与防御</h3>
+<ul>
+<li><strong>上下文冲突</strong>：计算结果变空白/总计行异常 → 用 ALLEXCEPT 保留必要筛选</li>
+<li><strong>隐式度量</strong>：始终显式定义度量值，避免拖拽自动生成的"隐式度量"</li>
+<li><strong>零除错误</strong>：用 <code>DIVIDE(分子, 分母, 0)</code> 替代 <code>分子/分母</code></li>
+<li>VAR 变量优化：减少重复计算 → <code>VAR Revenue = SUM(Sales[Amount]) RETURN DIVIDE(Revenue-Cost, Revenue)</code></li>
+<li>度量值 vs 计算列：优先用度量值（动态计算），计算列仅在行级逻辑需要时使用</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>DAX 的坑不在函数本身，在"上下文"理解</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"行上下文与筛选上下文的区别是 DAX 最核心的概念"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>占比计算、排名、累计、同比环比——所有 DAX 度量值开发</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">📅</span>日期表设计最佳实践</h3>
+<ul>
+<li>独立的<strong>日期表</strong>是时间智能函数正常工作的前提</li>
+<li>必须包含：无间断日期序列 + 年/季/月/周层级字段</li>
+<li>与事实表建立关系后，SAMEPERIODLASTYEAR 等函数才能正确计算</li>
+<li>⚠️ YTD 结果异常时，首先检查日期表关联是否正确</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>没有日期表，DAX 时间智能函数就是空中楼阁</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"日期表是 Power Pivot 时间分析的基石"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>同比环比分析、滚动预测、YTD 累计</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-7">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🤖 1.7 VBA / 宏自动化</h2><p>从宏录制到模块化编程</p></div>
+
+<div class="card">
+<h3><span class="icon">🎬</span>宏录制 vs 手动编码</h3>
+<ul>
+<li><strong>宏录制</strong>：零编码入门，操作即生成代码，适合固定流程</li>
+<li><strong>手动编码</strong>：灵活逻辑控制、可复用模块，适合复杂场景</li>
+<li>录制→查看→修改→优化：从录制的代码中学习 VBA 语法</li>
+<li>保存格式：必须另存为 <code>.xlsm</code>（启用宏的工作簿）</li>
+<li>安全设置：推荐"禁用所有宏，并发出通知"，仅允许信任来源</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>录制宏是入门最快路径，手动编码是进阶必经之路</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"录制宏适合快速完成固定操作，手动编码适合搭建可复用自动化方案"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>格式批量处理、报表自动生成、邮件自动发送</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">📦</span>模块化编码核心</h3>
+<ul>
+<li><strong>Option Explicit</strong>：强制声明变量，杜绝拼写错误</li>
+<li><strong>数据类型</strong>：Long > Integer（32位系统），避免 Variant 的性能损耗</li>
+<li><strong>子过程拆分</strong>：一个 Sub 只做一件事（读取→计算→输出→发送）</li>
+<li><strong>驼峰命名</strong>：<code>strSalesRegion</code>、<code>dblMonthlyRevenue</code></li>
+<li><strong>错误处理</strong>：<code>On Error GoTo/Resume</code>，防止崩溃</li>
+<li><strong>代码注释</strong>：每个过程顶部说明功能、参数、修改记录</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>模块化 = 可读 + 可维护 + 可复用</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"企业级 VBA 开发中，应始终坚持'显式优于隐式'的原则"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>团队协作项目、长期维护的自动化系统</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">⚡</span>VBA 性能优化铁律</h3>
+<ul>
+<li><code>Application.ScreenUpdating = False</code>：关闭屏幕刷新，提速 50%+</li>
+<li><code>Application.Calculation = xlCalculationManual</code>：关闭自动计算</li>
+<li><code>Application.EnableEvents = False</code>：关闭事件触发</li>
+<li><strong>数组替代单元格循环</strong>：数据读入数组→内存处理→一次性写回，提速 90%+</li>
+<li>避免 <code>Select/Activate</code>：直接操作对象 <code>Range("A1").Value = x</code></li>
+<li>用 <code>With…End With</code> 减少重复对象引用</li>
+<li>及时释放对象：<code>Set obj = Nothing</code></li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>VBA 性能优化的核心 = 减少 Excel 界面交互 + 内存中批量处理</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"将数据一次性读入数组后处理，再一次性写入，效率提升90%以上"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>10万+行数据处理、批量格式化、定时任务</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔗</span>跨文件与外部交互</h3>
+<ul>
+<li><code>Workbooks.Open</code> / <code>GetObject</code>：读取外部文件数据</li>
+<li><code>ADODB.Connection</code>：直连 SQL 数据库，执行查询</li>
+<li><code>FileSystemObject</code>：遍历文件夹，批量处理文件</li>
+<li><code>Outlook.Application</code>：自动发送邮件+附件</li>
+<li><code>Shell</code>：调用外部程序</li>
+<li>⚠️ 跨文件操作后及时 <code>Close</code>，释放资源</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>VBA 的真正价值在于打通 Excel 与外部世界的桥梁</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"跨文件自动化能减少70%的跨表操作人工误差"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>批量报表生成、数据库读写、邮件自动发送、文件整理</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-8">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🌐 1.8 外部数据源连接</h2><p>Excel 与外部世界的连接器</p></div>
+
+<div class="card">
+<h3><span class="icon">🗄️</span>数据库连接方式</h3>
+<ul>
+<li><strong>Power Query 直连</strong>：数据→获取数据→从数据库（推荐，自动记录步骤）</li>
+<li><strong>Microsoft Query</strong>：传统 ODBC 方式，可写 SQL</li>
+<li><strong>ODBC/OLEDB 连接字符串</strong>：VBA 中用 ADODB 连接</li>
+<li><strong>.odc 文件</strong>：创建永久连接，可在多工作簿中复用</li>
+<li>连接信息：服务器地址 + 数据库名 + 认证方式（Windows/数据库）</li>
+<li>建议使用只读账号连接，避免误操作生产数据</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>Power Query 直连是首选；VBA ADODB 用于编程级控制</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"用 Power Query 连接 SQL Server 比连 WiFi 还简单"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>实时数据看板、定期数据拉取、企业数据库对接</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🕷️</span>网页抓取与 API</h3>
+<ul>
+<li><strong>Power Query 从 Web</strong>：数据→获取数据→从 Web，自动识别网页表格</li>
+<li><strong>JSON 解析</strong>：PQ 天然支持 JSON 展开，逐层剥洋葱</li>
+<li><strong>API 调用</strong>：在 URL 中附加 API Key，PQ 自动解析返回数据</li>
+<li><strong>定时刷新</strong>：设置连接属性中的刷新频率，数据自动更新</li>
+<li>⚠️ 静态网页可直接抓取；动态 JS 渲染页面需其他方案</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>PQ 的 Web 抓取是零代码爬虫，覆盖 90% 静态网页场景</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"零代码爬取，告别 Python 爬虫"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>竞品价格监控、天气/汇率数据、企业微信打卡数据</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-9">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>📈 1.9 数据可视化与报表自动化</h2><p>让数据自己说话</p></div>
+
+<div class="card">
+<h3><span class="icon">📊</span>图表类型选择矩阵</h3>
+<ul>
+<li><strong>折线图</strong>：趋势变化（销售额走势、增长率）</li>
+<li><strong>柱状/条形图</strong>：对比分析（各区域业绩、产品排名）</li>
+<li><strong>饼图/环形图</strong>：占比结构（产品构成、客户类型分布）</li>
+<li><strong>堆叠图</strong>：多维度对比（多产品多地区叠加）</li>
+<li><strong>散点图</strong>：相关分析（价格-销量关系，含趋势线+R²）</li>
+<li><strong>仪表盘/KPI</strong>：目标达成率（圆环图叠加模拟指针）</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>图表选择 = 业务问题 → 视觉表达 的精准映射</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"不是所有数据都适合饼图，也不是所有趋势都适合折线图"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>月度经营分析、KPI 仪表盘、竞品对比报告</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🎛️</span>交互式仪表盘构建四步法</h3>
+<ul>
+<li><strong>Step 1</strong>：准备一维规范数据源（Ctrl+T 转表格）</li>
+<li><strong>Step 2</strong>：创建数据透视表，配置行/列/值/筛选</li>
+<li><strong>Step 3</strong>：插入数据透视图 + 美化（统一配色/字体/标签）</li>
+<li><strong>Step 4</strong>：插入切片器 → 报表连接 → 多图表联动</li>
+<li>布局原则：总→分结构，KPI 置顶，趋势图居中，明细表底部</li>
+<li>刷新机制：数据源追加新行 → 右键透视表→刷新 → 全表更新</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>仪表盘 = 规范数据 + 透视表 + 切片器，零代码实现</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"点击一下全部刷新，几秒钟后奇迹发生了"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>管理驾驶舱、周/月报自动化、实时监控面板</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🎨</span>报表自动化进阶</h3>
+<ul>
+<li><strong>动态数据源</strong>：OFFSET/INDEX 函数 + 命名区域，图表自动跟随数据增减</li>
+<li><strong>条件格式 KPI</strong>：数据条/色阶/图标集，红绿灯自动标注</li>
+<li><strong>VBA 一键导出</strong>：自动生成 PDF + 邮件发送</li>
+<li><strong>Power Query 自动刷新</strong>：连接属性设置定时刷新</li>
+<li><strong>模板标准化</strong>：<code>.xltx</code> 模板 + 版本号命名规范</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>报表自动化的核心：一次搭建，永久复用</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"将'每次重复劳动'变为'一次性投资建设'"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>周报/月报自动化、批量报表生成、定期邮件推送</p></div>
+</div>
+</div>
+</section>
+
+<section class="section layer1" id="L1-10">
+<div class="layer-badge">方法实践层 · L1</div>
+<div class="section-header"><h2>🔧 1.10 排错与调试</h2><p>从黑箱到透明</p></div>
+
+<div class="card">
+<h3><span class="icon">❌</span>六类高频错误速查</h3>
+<ul>
+<li><strong>#DIV/0!</strong>：除数为 0 或空白 → 用 IF/DIVIDE 防御</li>
+<li><strong>#N/A</strong>：VLOOKUP/MATCH 未找到匹配值 → 检查数据类型一致性</li>
+<li><strong>#VALUE!</strong>：参数类型不匹配 → 检查文本与数值混用</li>
+<li><strong>#REF!</strong>：引用的单元格被删除 → 不可逆，需重建公式</li>
+<li><strong>#NUM!</strong>：数值溢出或无效 → 检查计算范围</li>
+<li><strong>#NAME?</strong>：函数名拼写错误 → 检查拼写</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>每个错误代码对应固定的触发逻辑，掌握后可直接定位</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"90% 的公式错误可通过追踪引用快速定位根源"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>公式批量报错排查、报表上线前校验、跨表引用检查</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🔍</span>三大排错工具</h3>
+<ul>
+<li><strong>错误检查</strong>：公式→错误检查，自动遍历全表标记错误+修复建议</li>
+<li><strong>追踪引用</strong>：公式→追踪引用单元格，红色箭头指向数据源路径</li>
+<li><strong>监视窗口</strong>：右键→添加监视，跨工作表实时监控关键单元格</li>
+<li><strong>F9 分步计算</strong>：选中公式中某段函数按 F9，查看该段返回值</li>
+<li><strong>条件格式批量标记</strong>：单元格值→包含→错误，一键标红所有错误单元格</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>F9 + 追踪引用 = 公式排错的黄金组合</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"熟练使用追踪引用功能的职场人，公式错误修复时长缩短 72%"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>嵌套公式排错、跨表联动报表检查、数据类型不一致排查</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="icon">🛡️</span>格式不匹配排查逻辑</h3>
+<ul>
+<li>VLOOKUP 返回 #N/A 但肉眼看到数据存在 → 99% 是格式不匹配</li>
+<li>排查步骤：<code>=ISTEXT(A1)</code> vs <code>=ISNUMBER(A1)</code>，确认查找值与数据源类型一致</li>
+<li>常见原因：文本型数字 vs 数值型、隐形空格、全角/半角差异</li>
+<li>修复方法：分列→常规统一类型；<code>=TRIM()</code> 去空格；<code>=VALUE()</code> 转数字</li>
+</ul>
+<div class="tri">
+<div class="tri-item core"><div class="tri-label">核心要点</div><p>格式不匹配是最隐蔽的错误，内置工具难以直接定位</p></div>
+<div class="tri-item ctx"><div class="tri-label">原文语境</div><p>"职场人经常忽略批量导入数据的格式问题"</p></div>
+<div class="tri-item scene"><div class="tri-label">应用场景</div><p>VLOOKUP 查不到、SUM 结果为 0、排序异常</p></div>
+</div>
+</div>
+</section>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- APPENDIX -->
+<!-- ═══════════════════════════════════════════ -->
+
+<section class="section" id="glossary">
+<div class="section-header"><h2>📖 附录 A：术语表</h2></div>
+<div class="glossary">
+<div class="glossary-item"><dt>一维表</dt><dd>每行一条记录、每列一个属性的规范化数据表</dd></div>
+<div class="glossary-item"><dt>ETL</dt><dd>Extract-Transform-Load，数据抽取-转换-加载</dd></div>
+<div class="glossary-item"><dt>DAX</dt><dd>Data Analysis Expressions，Power Pivot 公式语言</dd></div>
+<div class="glossary-item"><dt>M 语言</dt><dd>Power Query 的函数式编程语言</dd></div>
+<div class="glossary-item"><dt>VertiPaq</dt><dd>Power Pivot 的列式内存压缩引擎</dd></div>
+<div class="glossary-item"><dt>星型模型</dt><dd>事实表居中+维度表环绕的数据仓库结构</dd></div>
+<div class="glossary-item"><dt>上下文转换</dt><dd>DAX 中行上下文与筛选上下文的切换机制</dd></div>
+<div class="glossary-item"><dt>增量刷新</dt><dd>仅加载新增数据，而非全量刷新</dd></div>
+<div class="glossary-item"><dt>折叠查询</dt><dd>将筛选推送到数据源端执行，减少传输量</dd></div>
+<div class="glossary-item"><dt>动态数组</dt><dd>365/2021+ 新特性，公式结果自动溢出到相邻单元格</dd></div>
+<div class="glossary-item"><dt>透视列</dt><dd>Power Query 中行值转列的操作</dd></div>
+<div class="glossary-item"><dt>逆透视</dt><dd>Power Query 中二维表转一维表的核心操作</dd></div>
+<div class="glossary-item"><dt>切片器</dt><dd>透视表的交互式筛选控件</dd></div>
+<div class="glossary-item"><dt>度量值</dt><dd>Power Pivot 中动态计算的聚合公式</dd></div>
+<div class="glossary-item"><dt>计算列</dt><dd>Power Pivot 表中新增的静态计算字段</dd></div>
+<div class="glossary-item"><dt>数据验证</dt><dd>限制单元格输入类型/范围的 Excel 功能</dd></div>
+<div class="glossary-item"><dt>条件格式</dt><dd>根据单元格值自动设置格式的 Excel 功能</dd></div>
+<div class="glossary-item"><dt>GIGO</dt><dd>Garbage In Garbage Out，垃圾进垃圾出</dd></div>
+<div class="glossary-item"><dt>主数据</dt><dd>企业核心共享数据（客户/产品/供应商等）</dd></div>
+<div class="glossary-item"><dt>ODC</dt><dd>Office Data Connection，Excel 数据连接文件格式</dd></div>
+</div>
+</section>
+
+<section class="section" id="reading">
+<div class="section-header"><h2>📚 附录 B：推荐学习顺序</h2></div>
+
+<div class="card">
+<h3><span class="icon">📖</span>阶段一：思维底座（1周）</h3>
+<ul>
+<li>阅读 L3 全部章节，建立第一性原理与规范优先思维</li>
+<li>理解自动化思维的核心逻辑与工具选型决策树</li>
+<li>反思自身工作中的反常识认知盲区</li>
+<li>实操：用第一性原理审视当前手头的表格，识别结构问题</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="icon">📖</span>阶段二：系统框架（1-2周）</h3>
+<ul>
+<li>掌握数据模型与结构理论（星型模型、一维表vs二维表）</li>
+<li>了解数据治理五大支柱，建立主数据管理意识</li>
+<li>理解 ETL 全链路流程与合并策略</li>
+<li>实操：画出手头数据的星型模型关系图</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="icon">📖</span>阶段三：规范与函数（2-3周）</h3>
+<ul>
+<li>掌握一维表规范，改掉六大录入坏习惯</li>
+<li>学会 Ctrl+T 转表格 + 数据验证 + 条件格式</li>
+<li>XLOOKUP / VLOOKUP + IFERROR 错误处理</li>
+<li>SUMIFS / COUNTIFS + 数据透视表基础</li>
+<li>实操：搭建一个自动更新的销售分析报表</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="icon">📖</span>阶段四：Power 工具链（3-4周）</h3>
+<ul>
+<li>Power Query：数据导入 + 清洗 + 追加/合并查询</li>
+<li>Power Query 进阶：M 语言基础 + 增量刷新</li>
+<li>Power Pivot：多表关联 + 星型模型 + DAX 五大函数</li>
+<li>实操：用 PQ+PP 搭建一个多源数据的分析模型</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="icon">📖</span>阶段五：自动化与可视化（2-3周）</h3>
+<ul>
+<li>VBA 入门：宏录制 → 修改代码 → 模块化编码</li>
+<li>VBA 进阶：数组处理 + 性能优化 + 跨文件交互</li>
+<li>仪表盘：透视表+透视图+切片器+条件格式</li>
+<li>实操：搭建一键刷新的管理驾驶舱</li>
+</ul>
+</div>
+
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+<p>Excel 文档数据管理 · 漏斗思维知识工具书 | 漏斗架构：底层思维 → 系统理论 → 方法实践</p>
+<p>知识来源：全网公开教程/博客/文档蒸馏提炼 · 2026</p>
+</footer>
+
+</div>
+</main>
+</body>
+</html>
